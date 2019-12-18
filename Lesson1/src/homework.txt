@@ -1,0 +1,222 @@
+public class Main {
+    public static void main(String[] args) {
+
+
+        ISportsman[] sportsmens = new ISportsman[5];
+        for (int i = 0; i < sportsmens.length; i++){
+            switch (i%3) {
+                case (0):
+                    sportsmens[i] = new Human("Human" + i);
+                    break;
+                case (1):
+                    sportsmens[i] = new Robot("Robot"+1);
+                    break;
+                case (2):
+                    sportsmens[i] = new Cat("Cat"+i);
+                    break;
+            }
+        }
+
+        ITrainer[] trainers = new ITrainer[5];
+        for (int i = 0; i < trainers.length; i++){
+            switch (i%2){
+                case 0:
+                    trainers[i] = new Treadmill();
+                    break;
+                case 1:
+                    trainers[i] = new Wall();
+                    break;
+            }
+        }
+
+        for(ISportsman sportsman : sportsmens){
+            for (ITrainer trainer : trainers){
+                if(trainer instanceof Treadmill && sportsman instanceof IRunnable){
+                    if(!((Treadmill) trainer).tryRun((IRunnable) sportsman)){
+                        break;
+                    }
+                }
+                if (trainer instanceof Wall && sportsman instanceof IJumpable){
+                    if(!((Wall) trainer).tryJump((IJumpable) sportsman)){
+                        break;
+                    }
+                }
+            }
+            System.out.println("Закончил упражнение");
+        }
+
+    }
+}
+
+public interface IRunnable {
+    boolean run(double distance);
+}
+
+public interface IJumpable {
+    boolean jump(double height);
+}
+
+public interface ITrainer {
+}
+
+public interface ISportsman {
+}
+
+public class Human implements IRunnable, IJumpable, ISportsman {
+    private String name;
+    private double maxDistance;
+    private double maxHeight;
+
+    public Human(String name){
+        this.name = name;
+        this.maxDistance = Math.random() * 2000 + 1000;
+        this.maxHeight = Math.random() + 0.5;
+    }
+
+    @Override
+    public boolean run(double distance) {
+        boolean result = distance > maxDistance ? false : true;
+        String resultMessage = result? "пробежал успешно": "не смог пробежать";
+        System.out.printf("%s может пробежать %.2f. Пытается пробежать %.2f. Результат: %s\n"
+                , name, maxDistance, distance, resultMessage);
+        return result;
+    }
+
+    @Override
+    public boolean jump(double height) {
+        boolean result = height > maxHeight ? false : true;
+        String resultMessage = result? "перепрыгнул успешно": "не смог перепрыгнуть";
+        System.out.printf("%s может перепрыгнуть %.2f. Пытается перепрыгнуть %.2f. Результат: %s\n"
+                , name, maxHeight, height, resultMessage);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Human:" +
+                " name = " + name +
+                ", maxDistance = " + maxDistance +
+                ", maxHeight = " + maxHeight;
+    }
+
+}
+
+public class Robot implements IRunnable, IJumpable, ISportsman {
+    private String name;
+    private double maxDistance;
+    private double maxHeight;
+
+    public Robot(String name){
+        this.name = name;
+        this.maxDistance = Math.random() * 10000 + 5000;
+        this.maxHeight = Math.random() + 1.5;
+    }
+
+    @Override
+    public boolean run(double distance) {
+        boolean result = distance > maxDistance ? false : true;
+        String resultMessage = result? "пробежал успешно": "не смог пробежать";
+        System.out.printf("%s может пробежать %.2f. Пытается пробежать %.2f. Результат: %s\n"
+                , name, maxDistance, distance, resultMessage);
+        return result;
+    }
+
+    @Override
+    public boolean jump(double height) {
+        boolean result = height > maxHeight ? false : true;
+        String resultMessage = result? "перепрыгнул успешно": "не смог перепрыгнуть";
+        System.out.printf("%s может перепрыгнуть %.2f. Пытается перепрыгнуть %.2f. Результат: %s\n"
+                , name, maxHeight, height, resultMessage);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Robot:" +
+                " name = " + name +
+                ", maxDistance = " + maxDistance +
+                ", maxHeight = " + maxHeight;
+    }
+
+}
+
+public class Cat implements IRunnable, IJumpable, ISportsman {
+    private String name;
+    private double maxDistance;
+    private double maxHeight;
+
+    public Cat(String name){
+        this.name = name;
+        this.maxDistance = Math.random() * 400 + 100;
+        this.maxHeight = Math.random() + 2;
+    }
+
+    @Override
+    public boolean run(double distance) {
+        boolean result = distance > maxDistance ? false : true;
+        String resultMessage = result? "пробежал успешно": "не смог пробежать";
+        System.out.printf("%s может пробежать %.2f. Пытается пробежать %.2f. Результат: %s\n"
+                , name, maxDistance, distance, resultMessage);
+        return result;
+    }
+
+    @Override
+    public boolean jump(double height) {
+        boolean result = height > maxHeight ? false : true;
+        String resultMessage = result? "перепрыгнул успешно": "не смог перепрыгнуть";
+        System.out.printf("%s может перепрыгнуть %.2f. Пытается перепрыгнуть %.2f. Результат: %s\n"
+                , name, maxHeight, height, resultMessage);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Cat:" +
+                " name = " + name +
+                ", maxDistance = " + maxDistance +
+                ", maxHeight = " + maxHeight;
+    }
+
+}
+
+public class Treadmill implements ITrainer{
+    private double distance;
+
+    public Treadmill(double distance) {
+        this.distance = distance;
+    }
+
+    public Treadmill() {
+        this(Math.random()*10000+500);
+    }
+
+    public boolean tryRun(IRunnable runner){
+        getInfo();
+        return runner.run(distance);
+    }
+
+    private void getInfo(){
+        System.out.printf("Беговаря дорожка. Дистанция %.2f\n", distance);
+    }
+}
+
+public class Wall implements ITrainer {
+    private double height;
+
+    public Wall(double height) {
+        this.height = height;
+    }
+    public Wall(){
+        this(Math.random()*1.5 + 0.5);
+    }
+
+    public boolean tryJump(IJumpable jumper){
+        getInfo();
+        return jumper.jump(height);
+    }
+
+    private void getInfo(){
+        System.out.printf("Стена. Высота %.2f\n", height);
+    }
+}
+
