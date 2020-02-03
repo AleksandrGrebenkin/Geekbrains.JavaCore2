@@ -44,13 +44,13 @@ public class ClientHandler {
             String[] tokens = message.split(" ", 3);
             String nickFromAuthManager = server.getAuthManager().getNicknameByLoginAndPassword(tokens[1], tokens[2]);
             if(nickFromAuthManager != null){
-                if(server.isNickBusy(nickFromAuthManager)){
+                if(server.isNickOnline(nickFromAuthManager)){
                     sendMessage("User is already logged in.");
                     return;
                 }
                 nickname = nickFromAuthManager;
-                server.subscribe(this);
                 sendMessage("/authok " + nickname);
+                server.subscribe(this);
                 authFlag = false;
                 return;
             } else {
@@ -64,15 +64,13 @@ public class ClientHandler {
         System.out.println("Message from Client: " + message);
         if (message.startsWith("/")){
             if (message.startsWith("/w ")){
-                String recipient = message.split(" ", 3)[1];
-                message = message.split(" ", 3)[2];
-                if(nickname.equals(recipient)){
-                    sendMessage("Cannot whisper to self.");
-                    return;
-                }
-                if(!server.whisperMessage(nickname, recipient, message)){
-                    sendMessage(recipient + " is not online");
-                }
+                String[] tokens = message.split(" ", 3);
+                server.sendPrivateMessage(this, tokens[1], tokens[2]);
+                return;
+            }
+            if (message.startsWith("/change_nick ")){
+                String[] tokens = message.split(" ", 2);
+                server.changeNickname(this, tokens[1]);
             }
             if (message.equals("/end")){
                 sendMessage("/end_confirm");
@@ -94,6 +92,10 @@ public class ClientHandler {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void close(){
